@@ -22,13 +22,30 @@ app.get('/people', async (req, res) => {
         console.log('Error querying db', error);
         res.status(500).json({ error: "DB query failed" });
     }
-})
+});
+
+app.get('/starships', async (req, res) => {
+    try {
+        const [rows] = await pool.query('SELECT * FROM starships');
+        res.json(rows);
+    } catch (error) {
+        console.log('Error querying db', error);
+        res.status(500).json({ error: "DB query failed" });
+    }
+});
+
+app.get('/planets', async (req, res) => {
+    try {
+        const [rows] = await pool.query('SELECT * FROM planets');
+        res.json(rows);
+    } catch (error) {
+        console.log('Error querying db', error);
+        res.status(500).json({ error: "DB query failed" });
+    }
+});
 
 app.listen(PORT, () => {
     console.log(`Backend sw api running at http://localhost:${PORT}`)
 });
 
 
-// "people": "https://swapi.info/api/people",
-// "planets": "https://swapi.info/api/planets",
-// "starships": "https://swapi.info/api/starships"
