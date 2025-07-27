@@ -15,6 +15,13 @@ async function fetchAll(endpoint) {
 
 async function insertPlanets(planets) {
     for (const p of planets) {
+
+        const residentsIds = p.residents.map(url => {
+            const parts = url.split('/');
+            const id = parseInt(parts[parts.length -1]);
+            return id;
+        });
+
         await db.execute(
             `INSERT IGNORE INTO planets
             (name, rotation_period, orbital_period, diameter, climate, gravity, terrain, surface_water, population, residents, films, created, edited, url)
@@ -29,7 +36,7 @@ async function insertPlanets(planets) {
                 p.terrain,
                 parseFloat(p.surface_water) || null,
                 parseInt(p.population) || null,
-                JSON.stringify(p.residents),
+                JSON.stringify(residentsIds),
                 JSON.stringify(p.films),
                 new Date(p.created),
                 new Date(p.edited),
@@ -42,6 +49,16 @@ async function insertPlanets(planets) {
 
 async function insertPeople(people) {
     for (const p of people) {
+
+        const homeworldPlanetIdSplit = p.homeworld.split('/');
+        const homeworldPlanetId = parseInt(homeworldPlanetIdSplit[homeworldPlanetIdSplit.length -1]);
+
+        const vehiclesIds = p.vehicles.map(url => {
+            const parts = url.split('/');
+            const id = parseInt(parts[parts.length -1]);
+            return id;
+        });
+
         await db.execute(
             `INSERT IGNORE INTO people  
             (name, height, mass, hair_color, skin_color, eye_color, birth_year, gender, homeworld, films, species, vehicles, starships, created, edited, url)
@@ -55,10 +72,10 @@ async function insertPeople(people) {
                 p.eye_color,
                 p.birth_year,
                 p.gender,
-                p.homeworld,
+                homeworldPlanetId,
                 JSON.stringify(p.films),
                 JSON.stringify(p.species),
-                JSON.stringify(p.vehicles),
+                JSON.stringify(vehiclesIds),
                 JSON.stringify(p.starships),
                 new Date(p.created),
                 new Date(p.edited),
@@ -70,6 +87,13 @@ async function insertPeople(people) {
 
 async function insertStarships(starships) {
     for (const s of starships) {
+
+        const pilotsIds = s.pilots.map(url => {
+            const parts = url.split('/');
+            const id = parseInt(parts[parts.length -1]);
+            return id;
+        });
+
         await db.execute(
             `INSERT IGNORE INTO starships
             (name, model, manufacturer, cost_in_credits, length, max_atmosphering_speed, crew, passengers, cargo_capacity, consumables, hyperdrive_rating, MGLT, starship_class, pilots, films, created, edited, url)
@@ -88,7 +112,7 @@ async function insertStarships(starships) {
                 parseFloat(s.hyperdrive_rating) || null,
                 parseInt(s.MGLT) || null,
                 s.starship_class,
-                JSON.stringify(s.pilots),
+                JSON.stringify(pilotsIds),
                 JSON.stringify(s.films),
                 new Date(s.created),
                 new Date(s.edited),
