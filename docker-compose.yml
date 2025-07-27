@@ -9,7 +9,8 @@ services:
     working_dir: /app
     command: ["node", "server.js"]
     depends_on:
-      - mysql
+      mysql:
+        condition: service_healthy
     environment:
       DB_HOST: mysql
       DB_USER: root
@@ -31,3 +32,8 @@ services:
       - "3306:3306"
     volumes:
       - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h" , "localhost", "-pwd123456"]
+      interval: 5s
+      timeout: 3s
+      retries: 5

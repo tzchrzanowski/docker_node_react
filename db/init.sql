@@ -60,9 +60,3 @@ CREATE TABLE planets (
     edited DATETIME,
     url VARCHAR(255)
 );
-
-INSERT INTO people (name) VALUES ('C3PO');
-
-INSERT INTO starships (name) VALUES ('Millenium falcon');
-
-INSERT INTO planets (name) VALUES ('Tatoine');
