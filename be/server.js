@@ -11,6 +11,20 @@ const PORT = 5031;
 app.use(cors());
 app.use(express.json());
 
+async function waitForDatabaseConnection(retries = 10, delay= 2000) {
+    for (let i=0; i< retries; i++) {
+        try {
+            await db.query('SELECT 1');
+            console.log("MySQL is ready!");
+            return;
+        } catch(error) {
+            console.log("Waiting for MySQL to be ready: ", i);
+            await new Promise(res => setTimeout(res, delay));
+        }
+    }
+    throw new Error('Couldnt connect to database. All attempts failed.');
+}
+
 async function populateDatabaseWithSWApi() {
     try {
         const [people, planets, starships] = await Promise.all([
@@ -59,7 +73,6 @@ app.get('/planets', async (req, res) => {
 
 app.listen(PORT, async () => {
     console.log(`Backend sw api running at http://localhost:${PORT}`)
+    await waitForDatabaseConnection();
     await populateDatabaseWithSWApi();
 });
-
-
