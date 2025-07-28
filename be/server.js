@@ -86,6 +86,30 @@ app.delete('/people/:id', async (req, res) => {
     }
 });
 
+app.put('/people/:id', async(req, res) => {
+    const personId = req.params.id;
+    const updatedData = req.body;
+
+    try {
+        const fields = Object.keys(updatedData);
+        const values = Object.values(updatedData);
+
+        if (fields.length === 0) {
+            return res.status(400).json({error: "Didnt update any fields."});
+        }
+
+        const setClause = fields.map(field => `${field} = ?`).join(', ');
+        const query = `UPDATE people SET ${setClause} WHERE id = ?`;
+
+        const [result] = await db.query(query, [...values, personId]);
+
+        res.json({message: "Person updated successfully!"});
+    } catch (error) {
+        console.error('Error updating person: ', error);
+        res.status(500).json({error: "Couldnt update person in database"});
+    }
+});
+
 app.get('/starships', async (req, res) => {
     try {
         const [rows] = await db.query('SELECT * FROM starships');

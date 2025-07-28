@@ -1,5 +1,5 @@
 import React, { useState, useEffect} from 'react';
-import { fetchPeople, createPerson, deletePerson } from '../services/peopleApi';
+import { fetchPeople, createPerson, deletePerson, updatePerson } from '../services/peopleApi';
 import { CircularProgress, Typography, List, ListItem, ListItemButton, ListItemText, Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField } from '@mui/material';
 
 function People() {
@@ -45,6 +45,60 @@ function People() {
         setSelected(null); 
     };
 
+    const handleOpenCreatePersonModal = (item) => {
+        if (item) {
+            handleClose();
+            setTimeout(()=>{
+                setSelected(item);
+                setFormData({
+                    name: item.name || '',
+                    height: item.height || 0,
+                    mass: item.mass || 0,
+                    hair_color: item.hair_color || '',
+                    skin_color: item.skin_color || '',
+                    eye_color: item.eye_color || '',
+                    birth_year: item.birth_year || '',
+                    gender: item.gender || '',
+                    homeworld: item.homeworld || '',
+                    url: item.url || ''
+                });
+                setOpenCreateModal(true)
+            }, 0);
+        } else {
+            setFormData({
+                name: '',
+                height: '',
+                mass: '',
+                hair_color: '',
+                skin_color: '',
+                eye_color: '',
+                birth_year: '',
+                gender: '',
+                homeworld: '',
+                url: ''
+            });
+            setOpenCreateModal(true)
+        }
+    }
+
+    const handleCloseCreatePersonModal = () => {
+        setFormData({
+            name: '',
+            height: '',
+            mass: '',
+            hair_color: '',
+            skin_color: '',
+            eye_color: '',
+            birth_year: '',
+            gender: '',
+            homeworld: '',
+            url: ''
+        });
+        setSelected(null);
+        setOpenCreateModal(false);
+    }
+
+
     useEffect(()=> {
         const load = async() => {
             try {
@@ -67,7 +121,12 @@ function People() {
 
     const handleSubmit = async ()=> {
         try {
-            await createPerson(formData);
+            if(selected) {
+                await updatePerson(selected.id, formData);
+            } else {
+                await createPerson(formData);
+            }
+
             triggerRefetch();
             setOpenCreateModal(false);
         } catch (error) {
@@ -91,7 +150,7 @@ function People() {
                 variant="contained"
                 color="primary"
                 sx={{ mb: 2}}
-                onClick={()=> setOpenCreateModal(true)}
+                onClick={()=> handleOpenCreatePersonModal(null)}
             >
                 Add new Person
             </Button>
@@ -114,18 +173,21 @@ function People() {
                     <Typography>Mass: {selected?.mass}</Typography>
                     <Typography>Hair color: {selected?.hair_color}</Typography>
                     <Typography>Skin color: {selected?.skin_color}</Typography>
-                    <Typography>Eye color: {selected?.blue}</Typography>
+                    <Typography>Eye color: {selected?.eye_color}</Typography>
                     <Typography>Birth year: {selected?.birth_year}</Typography>
                     <Typography>Gender: {selected?.gender}</Typography>
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={()=> handlDdeletePerson(selected?.id)}>Delete Person</Button>
+                    <Button onClick={()=> handleOpenCreatePersonModal(selected)}>Edit Person</Button>
                     <Button onClick={handleClose} variant="contained">Close</Button>
                 </DialogActions>
             </Dialog>
 
-            <Dialog open={openCreateModal} onClose={()=> setOpenCreateModal(false)}>
-                <DialogTitle>Add new Person</DialogTitle>
+            <Dialog open={openCreateModal} onClose={()=> handleCloseCreatePersonModal()}>
+                <DialogTitle>
+                    {selected ? 'Edit Person' : 'Add new Person'}
+                </DialogTitle>
                 <DialogContent>
                     {formFields.map((field)=> {
                         return (
@@ -144,8 +206,10 @@ function People() {
                     })}
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={()=> setOpenCreateModal(false)}>Cancel</Button>
-                    <Button onClick={()=> handleSubmit()}>Submit</Button>
+                    <Button onClick={()=> handleCloseCreatePersonModal()}>Cancel</Button>
+                    <Button onClick={()=> handleSubmit()}>
+                        {selected ? 'Update' : 'Submit'}
+                    </Button>
                 </DialogActions>
             </Dialog>
         </>
