@@ -130,6 +130,64 @@ app.get('/planets', async (req, res) => {
     }
 });
 
+app.post('/planets', async(req, res) => {
+    const { name, rotation_period, orbital_period, diameter, climate, gravity, terrain, surface_water, population, url } = req.body;
+
+    try {
+        const [result] = await db.query(
+            `INSERT INTO planets (name, rotation_period, orbital_period, diameter, climate, gravity, terrain, surface_water, population, url)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            [ name, rotation_period, orbital_period, diameter, climate, gravity, terrain, surface_water, population, url]
+        );
+
+        res.status(201).json({
+            message: "New person created in Planets table",
+        });
+    } catch (error) {
+        console.log('Error adding planet into planets table.', error);
+        res.status(500).json({error: "Couldnt insert into database."});
+    }
+});
+
+app.delete('/planets/:id', async (req, res) => {
+    const planetId = req.params.id;
+
+    try {
+        const [result] = await db.query('DELETE FROM planets WHERE id = ?', [planetId]);
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({error: "Planet to delete not found."});
+        }
+        res.status(200).json({message: "Planet deleted successfully"});
+    } catch (error) {
+        console.error("Error while deleting planet: ", error);
+        res.status(500).json({error: "Couldnt delete planet."});
+    }
+});
+
+app.put('/planets/:id', async(req, res) => {
+    const planetId = req.params.id;
+    const updatedData = req.body;
+
+    try {
+        const fields = Object.keys(updatedData);
+        const values = Object.values(updatedData);
+
+        if (fields.length === 0) {
+            return res.status(400).json({error: "Didnt update any fields."});
+        }
+
+        const setClause = fields.map(field => `${field} = ?`).join(', ');
+        const query = `UPDATE planets SET ${setClause} WHERE id = ?`;
+
+        const [result] = await db.query(query, [...values, planetId]);
+
+        res.json({message: "Planet updated successfully!"});
+    } catch (error) {
+        console.error('Error updating person: ', error);
+        res.status(500).json({error: "Couldnt update planet in database"});
+    }
+});
 app.listen(PORT, async () => {
     console.log(`Backend sw api running at http://localhost:${PORT}`)
     await waitForDatabaseConnection();
