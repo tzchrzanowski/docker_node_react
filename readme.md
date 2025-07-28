@@ -19,4 +19,10 @@ docker stop container_id
 Frontend React app runs on: http://localhost:3000
 Backend Node Express API runs at: http://localhost:5031
 
+Backend get endpoints to open directly for testing:
+    http://localhost:5031/planets
+    http://localhost:5031/people
+    http://localhost:5031/starships
+
+
 
