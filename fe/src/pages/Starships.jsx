@@ -53,6 +53,24 @@ function Starships() {
         setSelected(null); 
     };
 
+    const resetFormData = () => {
+        setFormData({
+            name: '',
+            model: '',
+            manufacturer: '',
+            cost_in_credits: 0,
+            length: 0,
+            max_atmosphering_speed: '',
+            crew: '',
+            passengers: '',
+            cargo_capacity: 0,
+            consumables: '',
+            hyperdrive_rating: 0,
+            MGLT: '',
+            starship_class: '',
+            url: ''
+        });
+    };
 
     const handleOpenCreateStarshipModal = (item) => {
         if (item) {
@@ -78,43 +96,13 @@ function Starships() {
                 setOpenCreateModal(true)
             }, 0);
         } else {
-            setFormData({
-                name: '',
-                model: '',
-                manufacturer: '',
-                cost_in_credits: 0,
-                length: 0,
-                max_atmosphering_speed: '',
-                crew: '',
-                passengers: '',
-                cargo_capacity: 0,
-                consumables: '',
-                hyperdrive_rating: 0,
-                MGLT: '',
-                starship_class: '',
-                url: ''
-            });
+            resetFormData();
             setOpenCreateModal(true)
         }
     }
 
     const handleCloseCreateStarshipModal = () => {
-        setFormData({
-            name: '',
-            model: '',
-            manufacturer: '',
-            cost_in_credits: 0,
-            length: 0,
-            max_atmosphering_speed: '',
-            crew: '',
-            passengers: '',
-            cargo_capacity: 0,
-            consumables: '',
-            hyperdrive_rating: 0,
-            MGLT: '',
-            starship_class: '',
-            url: ''
-        });
+        resetFormData();
         setSelected(null);
         setOpenCreateModal(false);
     }

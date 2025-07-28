@@ -45,6 +45,20 @@ function Planets() {
         setSelected(null); 
     };
 
+    const resetFormData = () => {
+        setFormData({
+            name: '',
+            rotation_period: 0,
+            orbital_period: 0,
+            diameter: 0,
+            climate: '',
+            gravity: '',
+            terrain: '',
+            surface_water: 0,
+            population: 0,
+            url: ''
+        });
+    };
 
     const handleOpenCreatePlanetModal = (item) => {
         if (item) {
@@ -66,35 +80,13 @@ function Planets() {
                 setOpenCreateModal(true)
             }, 0);
         } else {
-            setFormData({
-                name: '',
-                rotation_period: 0,
-                orbital_period: 0,
-                diameter: 0,
-                climate: '',
-                gravity: '',
-                terrain: '',
-                surface_water: 0,
-                population: 0,
-                url: ''
-            });
+            resetFormData();
             setOpenCreateModal(true)
         }
     }
 
     const handleCloseCreatePlanetodal = () => {
-        setFormData({
-            name: '',
-            rotation_period: 0,
-            orbital_period: 0,
-            diameter: 0,
-            climate: '',
-            gravity: '',
-            terrain: '',
-            surface_water: 0,
-            population: 0,
-            url: ''
-        });
+        resetFormData();
         setSelected(null);
         setOpenCreateModal(false);
     }

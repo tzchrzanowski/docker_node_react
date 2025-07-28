@@ -45,6 +45,21 @@ function People() {
         setSelected(null); 
     };
 
+    const resetFormData = () => {
+        setFormData({
+            name: '',
+            height: '',
+            mass: '',
+            hair_color: '',
+            skin_color: '',
+            eye_color: '',
+            birth_year: '',
+            gender: '',
+            homeworld: '',
+            url: ''
+        });
+    };
+
     const handleOpenCreatePersonModal = (item) => {
         if (item) {
             handleClose();
@@ -65,35 +80,13 @@ function People() {
                 setOpenCreateModal(true)
             }, 0);
         } else {
-            setFormData({
-                name: '',
-                height: '',
-                mass: '',
-                hair_color: '',
-                skin_color: '',
-                eye_color: '',
-                birth_year: '',
-                gender: '',
-                homeworld: '',
-                url: ''
-            });
+            resetFormData();
             setOpenCreateModal(true)
         }
     }
 
     const handleCloseCreatePersonModal = () => {
-        setFormData({
-            name: '',
-            height: '',
-            mass: '',
-            hair_color: '',
-            skin_color: '',
-            eye_color: '',
-            birth_year: '',
-            gender: '',
-            homeworld: '',
-            url: ''
-        });
+        resetFormData();
         setSelected(null);
         setOpenCreateModal(false);
     }
