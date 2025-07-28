@@ -1,5 +1,5 @@
 import React, { useState, useEffect} from 'react';
-import { fetchPeople, createPerson } from '../services/peopleApi';
+import { fetchPeople, createPerson, deletePerson } from '../services/peopleApi';
 import { CircularProgress, Typography, List, ListItem, ListItemButton, ListItemText, Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField } from '@mui/material';
 
 function People() {
@@ -75,6 +75,12 @@ function People() {
         }
     };
 
+    const handlDdeletePerson = async (id) => {
+        await deletePerson(id);
+        triggerRefetch();
+        handleClose();
+    };
+
     if (loading) return <CircularProgress />;
 
     return (
@@ -113,6 +119,7 @@ function People() {
                     <Typography>Gender: {selected?.gender}</Typography>
                 </DialogContent>
                 <DialogActions>
+                    <Button onClick={()=> handlDdeletePerson(selected?.id)}>Delete Person</Button>
                     <Button onClick={handleClose} variant="contained">Close</Button>
                 </DialogActions>
             </Dialog>

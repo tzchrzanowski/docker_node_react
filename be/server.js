@@ -70,6 +70,22 @@ app.post('/people', async(req, res) => {
     }
 });
 
+app.delete('/people/:id', async (req, res) => {
+    const personId = req.params.id;
+
+    try {
+        const [result] = await db.query('DELETE FROM people WHERE id = ?', [personId]);
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({error: "Person to delete not found."});
+        }
+        res.status(200).json({message: "Person deleted successfully"});
+    } catch (error) {
+        console.error("Error while deleting person: ", error);
+        res.status(500).json({error: "Couldnt delete person."});
+    }
+});
+
 app.get('/starships', async (req, res) => {
     try {
         const [rows] = await db.query('SELECT * FROM starships');
