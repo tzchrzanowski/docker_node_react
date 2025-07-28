@@ -120,6 +120,68 @@ app.get('/starships', async (req, res) => {
     }
 });
 
+app.post('/starships', async(req, res) => {
+    const {
+        name, model, manufacturer, cost_in_credits, length, max_atmosphering_speed, crew, passengers, cargo_capacity, consumables, hyperdrive_rating, MGLT, starship_class, url
+    } = req.body;
+
+    try {
+        const [result] = await db.query(
+            `INSERT INTO starships (
+                name, model, manufacturer, cost_in_credits, length, max_atmosphering_speed, crew, passengers, cargo_capacity, consumables, hyperdrive_rating, MGLT, starship_class, url
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            [ name, model, manufacturer, cost_in_credits, length, max_atmosphering_speed, crew, passengers, cargo_capacity, consumables, hyperdrive_rating, MGLT, starship_class, url ]
+        );
+
+        res.status(201).json({
+            message: "New starship created in Starships table",
+        });
+    } catch (error) {
+        console.log('Error adding starship into Starships table.', error);
+        res.status(500).json({error: "Couldnt insert into database."});
+    }
+});
+
+app.delete('/starships/:id', async (req, res) => {
+    const starshipId = req.params.id;
+
+    try {
+        const [result] = await db.query('DELETE FROM starships WHERE id = ?', [starshipId]);
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({error: "Starship to delete not found."});
+        }
+        res.status(200).json({message: "Starship deleted successfully"});
+    } catch (error) {
+        console.error("Error while deleting Starship: ", error);
+        res.status(500).json({error: "Couldnt delete Starship."});
+    }
+});
+
+app.put('/starships/:id', async(req, res) => {
+    const starshipId = req.params.id;
+    const updatedData = req.body;
+
+    try {
+        const fields = Object.keys(updatedData);
+        const values = Object.values(updatedData);
+
+        if (fields.length === 0) {
+            return res.status(400).json({error: "Didnt update any fields."});
+        }
+
+        const setClause = fields.map(field => `${field} = ?`).join(', ');
+        const query = `UPDATE starships SET ${setClause} WHERE id = ?`;
+
+        const [result] = await db.query(query, [...values, starshipId]);
+
+        res.json({message: "Starship updated successfully!"});
+    } catch (error) {
+        console.error('Error updating Starship: ', error);
+        res.status(500).json({error: "Couldnt update Starship in database"});
+    }
+});
+
 app.get('/planets', async (req, res) => {
     try {
         const [rows] = await db.query('SELECT * FROM planets');
@@ -184,10 +246,11 @@ app.put('/planets/:id', async(req, res) => {
 
         res.json({message: "Planet updated successfully!"});
     } catch (error) {
-        console.error('Error updating person: ', error);
+        console.error('Error updating planet: ', error);
         res.status(500).json({error: "Couldnt update planet in database"});
     }
 });
+
 app.listen(PORT, async () => {
     console.log(`Backend sw api running at http://localhost:${PORT}`)
     await waitForDatabaseConnection();
