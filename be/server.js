@@ -51,6 +51,25 @@ app.get('/people', async (req, res) => {
     }
 });
 
+app.post('/people', async(req, res) => {
+    const { name, height, mass, hair_color, skin_color, eye_color, birth_year, gender, homeworld, url } = req.body;
+
+    try {
+        const [result] = await db.query(
+            `INSERT INTO people (name, height, mass, hair_color, skin_color, eye_color, birth_year, gender, homeworld, url)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            [name, height, mass, hair_color, skin_color, eye_color, birth_year, gender, homeworld, url]
+        );
+
+        res.status(201).json({
+            message: "New person created in People table",
+        });
+    } catch (error) {
+        console.log('Error adding person into people table.', error);
+        res.status(500).json({error: "Couldnt insert into database."});
+    }
+});
+
 app.get('/starships', async (req, res) => {
     try {
         const [rows] = await db.query('SELECT * FROM starships');
